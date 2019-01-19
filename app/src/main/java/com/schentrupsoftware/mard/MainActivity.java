@@ -1,16 +1,22 @@
 package com.schentrupsoftware.mard;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,6 +27,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.gms.vision.text.TextRecognizer;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +40,7 @@ import com.schentrupsoftware.mard.Fragments.ListFragment;
 import com.schentrupsoftware.mard.Fragments.ScanFragment;
 import com.schentrupsoftware.mard.Objects.TagUpdate;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -39,11 +50,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int HOME_POS = 0;
     private static final int SCAN_POS = 1;
     private static final int LIST_POS = 2;
+    private static final int requestPermissionID = 101;
+    private static final String TAG = "MainActivity";
 
     private NoSwipePager viewPager;
     private BottomBarAdapter pagerAdapter;
     private FirebaseFirestore db;
     private CurrentLocation currentLocation;
+    private CameraSource cameraSource;
+    private SurfaceView cameraView;
+    private TextView textView;
 
     private EditText tagIDField;
     private EditText speciesField;
@@ -63,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     viewPager.setCurrentItem(SCAN_POS);
+                    startCameraSource();
                     return true;
                 case R.id.navigation_notifications:
                     viewPager.setCurrentItem(LIST_POS);
@@ -152,5 +169,93 @@ public class MainActivity extends AppCompatActivity {
                     }
         });
     }
+    private void startCameraSource() {
 
+        View v = viewPager.getFocusedChild();
+        cameraView = v.findViewById(R.id.surfaceView);
+        textView = v.findViewById(R.id.pictureText);
+
+        //Create the TextRecognizer
+        final TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+
+        if (!textRecognizer.isOperational()) {
+            Log.w(TAG, "Detector dependencies not loaded yet");
+        } else {
+
+            //Initialize camerasource to use high resolution and set Autofocus on.
+            cameraSource = new CameraSource.Builder(getApplicationContext(), textRecognizer)
+                    .setFacing(CameraSource.CAMERA_FACING_BACK)
+                    .setRequestedPreviewSize(1280, 1024)
+                    .setAutoFocusEnabled(true)
+                    .setRequestedFps(2.0f)
+                    .build();
+
+            /**
+             * Add call back to SurfaceView and check if camera permission is granted.
+             * If permission is granted we can start our cameraSource and pass it to surfaceView
+             */
+            cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
+                @Override
+                public void surfaceCreated(SurfaceHolder holder) {
+                    try {
+
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[]{Manifest.permission.CAMERA},
+                                    requestPermissionID);
+                            return;
+                        }
+                        cameraSource.start(cameraView.getHolder());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                }
+
+                /**
+                 * Release resources for cameraSource
+                 */
+                @Override
+                public void surfaceDestroyed(SurfaceHolder holder) {
+                    cameraSource.stop();
+                }
+            });
+
+            //Set the TextRecognizer's Processor.
+            textRecognizer.setProcessor(new Detector.Processor<TextBlock>() {
+                @Override
+                public void release() {
+                }
+
+                /**
+                 * Detect all the text from camera using TextBlock and the values into a stringBuilder
+                 * which will then be set to the textView.
+                 * */
+                @Override
+                public void receiveDetections(Detector.Detections<TextBlock> detections) {
+                    final SparseArray<TextBlock> items = detections.getDetectedItems();
+                    if (items.size() != 0 ){
+
+                        textView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for(int i=0;i<items.size();i++){
+                                    TextBlock item = items.valueAt(i);
+                                    stringBuilder.append(item.getValue());
+                                    stringBuilder.append("\n");
+                                }
+                                textView.setText(stringBuilder.toString());
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
 }
