@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "9036664992",
+    "firebase_url": "https://mard-d3e5a.firebaseio.com",
+    "project_id": "mard-d3e5a",
+    "storage_bucket": "mard-d3e5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9036664992:android:717aae58d66768d9",
+        "android_client_info": {
+          "package_name": "com.schentrupsoftware.mard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9036664992-bqttbu5c2pcmkh9v3elab6u526bqka66.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmHEUyqW3MRr9I14p3DJ3Fd-_YI4FLa8M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
