@@ -135,13 +135,13 @@ public class MainActivity extends AppCompatActivity {
         insertNewTag(tagUpdate);
 
         tagIDField.getText().clear();
-        sexField.getSelectedItem().toString();
-        colorField.getSelectedItem().toString();
-        speciesField.getText().toString();
+        sexField.setSelection(0);
+        colorField.setSelection(0);
+        speciesField.getText().clear();
     }
 
     private void setupVeiws() {
-        View v = viewPager.getFocusedChild();
+        View v = viewPager.getChildAt(HOME_POS);
 
         tagIDField = (EditText) v.findViewById(R.id.numberField);
         speciesField = (EditText) v.findViewById(R.id.speciesField);
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startCameraSource() {
 
-        View v = viewPager.getFocusedChild();
+        View v = viewPager.getChildAt(SCAN_POS);
         cameraView = v.findViewById(R.id.surfaceView);
         textView = v.findViewById(R.id.pictureText);
 
