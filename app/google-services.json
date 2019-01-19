@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "9036664992-hp4n7i55n6viti4h99uuuljjdc68bt3a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.schentrupsoftware.mard",
+            "certificate_hash": "56997b6eebaed2d8b86bc800751ebe00a6804f1d"
+          }
+        },
+        {
           "client_id": "9036664992-bqttbu5c2pcmkh9v3elab6u526bqka66.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9036664992-bqttbu5c2pcmkh9v3elab6u526bqka66.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
