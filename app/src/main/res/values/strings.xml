@@ -3,4 +3,22 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Scan</string>
     <string name="title_notifications">List</string>
+    <string name="number_field">Band ID</string>
+    <string name="species_field">Species</string>
+    <string name="description_form">New tag submission</string>
+    <string name="submit_button">Submit</string>
+    <string-array name="colors_array">
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Gray</item>
+        <item>Orange</item>
+        <item>Purple</item>
+    </string-array>
+    <string-array name="sex_array">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string name="sex_text">Sex:</string>
+    <string name="color_text">Tag color:</string>
 </resources>
