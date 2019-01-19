@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupDB() {
-        FirebaseApp.initializeApp(Context);
+        FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -115,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
                 speciesField.getText().toString(),
                 currentLocation);
         insertNewTag(tagUpdate);
+
+        tagIDField.getText().clear();
+        sexField.getSelectedItem().toString();
+        colorField.getSelectedItem().toString();
+        speciesField.getText().toString();
     }
 
     private void setupVeiws() {
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        System.out.print("Main Activity: Tag added with id: " + documentReference.getId());
+                        Toast.makeText(getApplicationContext(), "Tag Added", Toast.LENGTH_SHORT);
                         if(!tagUpdateQueue.isEmpty()) {
                             insertNewTag(tagUpdateQueue.remove(0));
                         }
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "Tag add failed. Added to Queue.", Toast.LENGTH_SHORT);
                         System.out.print(e);
                     }
         });
