@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MARD</string>
+    <string name="app_name">Band-it</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Scan</string>
     <string name="title_notifications">List</string>
