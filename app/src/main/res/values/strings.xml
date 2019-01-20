@@ -7,7 +7,10 @@
     <string name="species_field">Species</string>
     <string name="description_form">New tag submission</string>
     <string name="submit_button">Submit</string>
-    <string name="default_pic_text">Pictured Text</string>
+    <string name="default_pic_text">Searching...</string>
+    <string name="ok">Okay</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_title">Upload Scan</string>
     <string-array name="colors_array">
         <item>Red</item>
         <item>Blue</item>

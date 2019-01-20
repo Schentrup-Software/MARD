@@ -2,14 +2,18 @@ package com.schentrupsoftware.mard;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.util.Log;
@@ -26,16 +30,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.Document;
 import com.schentrupsoftware.mard.Fragments.HomeFragment;
 import com.schentrupsoftware.mard.Fragments.ListFragment;
 import com.schentrupsoftware.mard.Fragments.ScanFragment;
@@ -44,7 +56,10 @@ import com.schentrupsoftware.mard.Objects.TagUpdate;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<TagUpdate> tagUpdateQueue;
     private boolean cameraInit = false;
+    private boolean locked = false;
+    private Pattern pattern = Pattern.compile("[A-Z][A-Z]-\\d\\d");
+    private Pattern patternO = Pattern.compile("[A-Z][A-Z]-[o]\\d");
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -138,18 +156,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickSubmit(View v) {
         setupVeiws();
-        TagUpdate tagUpdate = new TagUpdate(
-                tagIDField.getText().toString(),
-                sexField.getSelectedItem().toString(),
-                colorField.getSelectedItem().toString(),
-                speciesField.getText().toString(),
-                currentLocation);
-        insertNewTag(tagUpdate);
 
-        tagIDField.getText().clear();
-        sexField.setSelection(0);
-        colorField.setSelection(0);
-        speciesField.getText().clear();
+        Matcher matcher = pattern.matcher(tagIDField.getText().toString());
+        if(matcher.matches()) {
+            TagUpdate tagUpdate = new TagUpdate(
+                    tagIDField.getText().toString(),
+                    sexField.getSelectedItem().toString(),
+                    colorField.getSelectedItem().toString(),
+                    speciesField.getText().toString(),
+                    currentLocation);
+            insertNewTag(tagUpdate);
+
+            tagIDField.getText().clear();
+            sexField.setSelection(0);
+            colorField.setSelection(0);
+            speciesField.getText().clear();
+        } else {
+            Toast.makeText(getApplicationContext(), "Tag add failed. Does not match pattern.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupVeiws() {
@@ -168,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(getApplicationContext(), "Tag Added", Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), "Tag Added", Toast.LENGTH_SHORT).show();
                         if(!tagUpdateQueue.isEmpty()) {
                             insertNewTag(tagUpdateQueue.remove(0));
                         }
@@ -176,11 +200,12 @@ public class MainActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Tag add failed. Added to Queue.", Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), "Tag add failed. Added to Queue.", Toast.LENGTH_SHORT).show();
                         System.out.print(e);
                     }
         });
     }
+
     private void startCameraSource() {
 
         cameraInit = true;
@@ -251,24 +276,75 @@ public class MainActivity extends AppCompatActivity {
                  * */
                 @Override
                 public void receiveDetections(Detector.Detections<TextBlock> detections) {
+                    CollectionReference collection = db.collection("Tag_Distribution");
                     final SparseArray<TextBlock> items = detections.getDetectedItems();
-                    if (items.size() != 0 ){
+                    String tagID = "";
 
-                        textView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                StringBuilder stringBuilder = new StringBuilder();
-                                for(int i=0;i<items.size();i++){
-                                    TextBlock item = items.valueAt(i);
-                                    stringBuilder.append(item.getValue());
-                                    stringBuilder.append("\n");
-                                }
-                                textView.setText(stringBuilder.toString());
-                            }
-                        });
+                    if (items.size() != 0 ){
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for(int i=0;i<items.size();i++) {
+                            TextBlock item = items.valueAt(i);
+                            stringBuilder.append(item.getValue());
+                            stringBuilder.append(" ");
+                        }
+
+                        Matcher matcherO = patternO.matcher(stringBuilder.toString());
+                        if(matcherO.find()) {
+                            tagID = matcherO.group().replace('o', '0');
+                            checkScan(tagID, collection);
+                        }
+
+                        Matcher matcher = pattern.matcher(stringBuilder.toString());
+                        if(matcher.find()) {
+                            tagID = matcher.group();
+                            checkScan(tagID, collection);
+                        }
                     }
                 }
             });
         }
     }
+
+    private void checkScan(final String tagID, final CollectionReference collection) {
+        if(locked)
+            return;
+        else
+            locked = true;
+
+        collection.whereEqualTo("tagID", tagID).orderBy("timeOfObservation", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot documents = task.getResult();
+                    if (!documents.isEmpty()) {
+                        DocumentSnapshot document = documents.getDocuments().get(0);
+
+                        //Here we are checking to see if the newest document with this tag had been updated in the last minute
+                        //If it has not, upload it as a new tag
+                        Timestamp timestampOfObservation = (Timestamp) document.get("timeOfObservation");
+                        Date timeOfObservation = timestampOfObservation.toDate();
+                        Date now = new Date();
+
+                        if (timeOfObservation.getTime() + 60000 < now.getTime()) {
+                            Log.v("Scanner", "Uploading");
+                            insertNewTag(new TagUpdate(
+                                    document.get("tagID").toString(),
+                                    document.get("sex").toString(),
+                                    document.get("color").toString(),
+                                    document.get("species").toString(),
+                                    currentLocation));
+
+                            textView.setText("Tag ID " + tagID + " updated.");
+                        }
+                    } else {
+                        textView.setText("Tag ID " + tagID + " not in system yet.");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+                locked = false;
+            }
+        });
+    }
+
 }
