@@ -3,11 +3,19 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Scan</string>
     <string name="title_notifications">List</string>
-    <string name="number_field">Band ID</string>
+
+    <string name="number_field">Tag ID</string>
+    <string name="tag_field">Tag Color</string>
     <string name="species_field">Species</string>
+    <string name="sex_field">Sex</string>
+    <string name="date_field">Date of Observation</string>
+    <string name="latitude_field">Latitude</string>
+    <string name="longitude_field">Longitude</string>
+
     <string name="description_form">New tag submission</string>
     <string name="submit_button">Submit</string>
     <string name="default_pic_text">Pictured Text</string>
+    <string name="list_header">Tag Distribution</string>
     <string-array name="colors_array">
         <item>Red</item>
         <item>Blue</item>

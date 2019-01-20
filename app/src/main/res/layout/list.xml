@@ -1,13 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/listTableLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:shrinkColumns="*"
+    android:stretchColumns="*">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="LIST!!!"
-        android:textSize="100sp" />
-</LinearLayout>
+    <TableRow
+        android:id="@+id/listTableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/Header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_span="6"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:text="@string/list_header"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:typeface="serif"></TextView>
+    </TableRow>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+
+    <TableRow
+        android:id="@+id/descriptors"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tagID"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/number_field"
+            android:textColorLink="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/tagColor"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/tag_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/species"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/species_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/sex"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/sex_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/observationDate"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/date_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/latitude"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/latitude_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/longitude"
+            android:freezesText="true"
+            android:gravity="center"
+            android:text="@string/longitude_field"
+            android:textSize="12sp"
+            android:textStyle="bold"></TextView>
+    </TableRow>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+</TableLayout>
