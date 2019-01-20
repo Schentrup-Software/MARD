@@ -3,6 +3,7 @@ package com.schentrupsoftware.mard;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     viewPager.setCurrentItem(SCAN_POS);
-                    if(!cameraInit) startCameraSource();
+                    if (!cameraInit) startCameraSource();
                     return true;
                 case R.id.navigation_notifications:
                     viewPager.setCurrentItem(LIST_POS);
@@ -94,14 +95,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        currentLocation = new CurrentLocation();
         tagUpdateQueue = new ArrayList<TagUpdate>();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        setupLocation();
         setupViewPager();
         setupDB();
+    }
+
+    private void setupLocation() {
+        currentLocation = new CurrentLocation();
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 3, currentLocation);
     }
 
     private void setupViewPager() {
@@ -199,19 +210,13 @@ public class MainActivity extends AppCompatActivity {
             cameraView.getHolder().addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {
-                    try {
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
-                                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.CAMERA},
-                                    requestPermissionID);
-                            return;
-                        }
-                        cameraSource.start(cameraView.getHolder());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.CAMERA},
+                                requestPermissionID);
+                        return;
                     }
                 }
 
@@ -227,6 +232,12 @@ public class MainActivity extends AppCompatActivity {
                     cameraSource.stop();
                 }
             });
+
+            try {
+                cameraSource.start(cameraView.getHolder());
+            } catch (Exception e){
+                Log.e("Error", e.toString());
+            }
 
             //Set the TextRecognizer's Processor.
             textRecognizer.setProcessor(new Detector.Processor<TextBlock>() {

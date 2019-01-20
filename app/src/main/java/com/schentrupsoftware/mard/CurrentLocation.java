@@ -3,6 +3,7 @@ package com.schentrupsoftware.mard;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 
 public class CurrentLocation implements LocationListener {
 
@@ -13,6 +14,7 @@ public class CurrentLocation implements LocationListener {
     public void onLocationChanged(Location location) {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
+        Log.v("Location", "Long: " + longitude + " Lat: " + latitude);
     }
 
     @Override
