@@ -24,7 +24,7 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:typeface="serif"></TextView>
+            android:typeface="serif"/>
     </TableRow>
 
     <View
@@ -39,12 +39,14 @@
 
         <TextView
             android:id="@+id/tagID"
+            android:layout_width="40dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/number_field"
             android:textColorLink="@color/common_google_signin_btn_text_dark_focused"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
@@ -53,11 +55,13 @@
 
         <TextView
             android:id="@+id/tagColor"
+            android:layout_width="50dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/tag_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
         <View
             android:layout_width="match_parent"
@@ -66,11 +70,13 @@
 
         <TextView
             android:id="@+id/species"
+            android:layout_width="90dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/species_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
@@ -79,11 +85,13 @@
 
         <TextView
             android:id="@+id/sex"
+            android:layout_width="20dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/sex_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
         <View
             android:layout_width="match_parent"
@@ -92,11 +100,13 @@
 
         <TextView
             android:id="@+id/observationDate"
+            android:layout_width="60dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/date_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold" />
 
         <View
             android:layout_width="match_parent"
@@ -105,11 +115,13 @@
 
         <TextView
             android:id="@+id/latitude"
+            android:layout_width="45dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/latitude_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
         <View
             android:layout_width="match_parent"
@@ -118,11 +130,13 @@
 
         <TextView
             android:id="@+id/longitude"
+            android:layout_width="55dp"
+            android:layout_height="15dp"
             android:freezesText="true"
             android:gravity="center"
             android:text="@string/longitude_field"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
     </TableRow>
 
     <View

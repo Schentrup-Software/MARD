@@ -8,7 +8,7 @@
     <string name="tag_field">Tag Color</string>
     <string name="species_field">Species</string>
     <string name="sex_field">Sex</string>
-    <string name="date_field">Date of Observation</string>
+    <string name="date_field">Date</string>
     <string name="latitude_field">Latitude</string>
     <string name="longitude_field">Longitude</string>
 

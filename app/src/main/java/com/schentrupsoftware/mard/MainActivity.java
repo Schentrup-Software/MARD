@@ -27,6 +27,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_notifications:
                     viewPager.setCurrentItem(LIST_POS);
+                    setupTable();
                     return true;
             }
             return false;
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         pagerAdapter.addFragments(new ScanFragment());
         pagerAdapter.addFragments(new ListFragment());
 
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(pagerAdapter);
     }
 
@@ -183,6 +187,40 @@ public class MainActivity extends AppCompatActivity {
         speciesField = (EditText) v.findViewById(R.id.speciesField);
         sexField = (Spinner) v.findViewById(R.id.sexDropdown);
         colorField = (Spinner) v.findViewById(R.id.colorDropdown);
+    }
+
+    private void setupTable() {
+
+        final TableLayout table = (TableLayout) viewPager.getChildAt(LIST_POS).findViewById(R.id.listTableLayout);
+        CollectionReference collection = db.collection("Tag_Distribution");
+
+        collection.orderBy("timeOfObservation", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot documents = task.getResult();
+                    if (!documents.isEmpty()) {
+
+                        for(DocumentSnapshot d : documents)
+                        {
+                            // Inflate your row "template" and fill out the fields.
+                            TableRow row = (TableRow) LayoutInflater.from(MainActivity.this).inflate(R.layout.row, null);
+                            ((TextView)row.findViewById(R.id.tagIDRow)).setText(d.get("tagID").toString());
+                            ((TextView)row.findViewById(R.id.sexRow)).setText(d.get("sex").toString());
+                            ((TextView)row.findViewById(R.id.tagColorRow)).setText(d.get("color").toString());
+                            ((TextView)row.findViewById(R.id.speciesRow)).setText(d.get("species").toString());
+                            ((TextView)row.findViewById(R.id.longitudeRow)).setText(d.get("longitudeOfObservation").toString());
+                            ((TextView)row.findViewById(R.id.latitudeRow)).setText(d.get("latitudeOfObservation").toString());
+
+                            Date date = ((Timestamp) d.get("timeOfObservation")).toDate();
+                            ((TextView)row.findViewById(R.id.observationDateRow)).setText(date.toString());
+                            table.addView(row);
+                        }
+                        table.requestLayout();
+                    }
+                }
+            }
+        });
     }
 
     private void insertNewTag(TagUpdate tagUpdate) {
