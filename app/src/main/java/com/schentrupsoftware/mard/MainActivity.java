@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startCameraSource() {
-
         cameraInit = true;
         View v = viewPager.getChildAt(SCAN_POS);
         cameraView = v.findViewById(R.id.surfaceView);
