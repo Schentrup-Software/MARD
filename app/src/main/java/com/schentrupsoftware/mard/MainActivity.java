@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner colorField;
 
     private ArrayList<TagUpdate> tagUpdateQueue;
+    private boolean cameraInit = false;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     viewPager.setCurrentItem(SCAN_POS);
-                    startCameraSource();
+                    if(!cameraInit) startCameraSource();
                     return true;
                 case R.id.navigation_notifications:
                     viewPager.setCurrentItem(LIST_POS);
@@ -171,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void startCameraSource() {
 
+        cameraInit = true;
         View v = viewPager.getChildAt(SCAN_POS);
         cameraView = v.findViewById(R.id.surfaceView);
         textView = v.findViewById(R.id.pictureText);
